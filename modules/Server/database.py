@@ -31,16 +31,20 @@ class Database(object):
         
     def read(self):
         """Read a random location in the database."""
-        
-        return(self.fortunes[self.rand.randint(0,len(self.fortunes)-1)])
+        #print("DB trying to read")
+        s = self.fortunes[self.rand.randint(0,len(self.fortunes)-1)]
+        #print("DB has read fortune:"+s)
+        return(s)
 
     def write(self, fortune):
         """Write a new fortune to the database."""
-        
+        #print("DB tryinsg to write fortune:"+fortune)
         # Add to stored list
-        self.fortunes.append(fortune);
+        self.fortunes.append(fortune)
         
         # Append to file
         db = open(self.db_file,'a')
         db.write(fortune+'\n%\n')
         db.close()
+
+        #print("DB thinks it worked")

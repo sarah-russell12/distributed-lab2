@@ -46,8 +46,11 @@ parser.add_argument(
     help="Server address."
 )
 opts = parser.parse_args()
-server_address = opts.address[0]
-server_port = opts.address[1]
+print(opts)
+print(opts.address)
+(server_address, server_port) = opts.address[0]
+print(server_address)
+print(server_port)
 
 # -----------------------------------------------------------------------------
 # Auxiliary classes
@@ -63,55 +66,51 @@ class DatabaseProxy(object):
     """Class that simulates the behavior of the database class."""
 
     def __init__(self, server_address, server_port):
-        self.address = server_address
-        self.port = server_port
+        self.server_address = server_address
+        self.server_port = server_port
 
     # Public methods
 
     def read(self):
         req = dict()
         req["method"] = "read"
-        req["args"] = list()
+        req["args"] = []
 
-        result = self.doRequest(reqString)
+        result = self.doRequest(req)
 
-        if("error" in result) {
-            print "An error has occurred on the server:"
-            print result["error"]["name"] + ":\n\t" + result["error"]["args"]
-        }
-        else {
-            return(result["result"])
-        }
+        return(result)
 
     def write(self, fortune):
         req = dict()
         req["method"] = "write"
-        req["args"] = list()
+        req["args"] = [fortune]
 
-        result = self.doRequest(reqString)
+        result = self.doRequest(req)
 
-        if("error" in result) {
-            print "An error has occurred on the server:"
-            print result["error"]["name"] + ":\n\t" + result["error"]["args"]
-        }
-        else {
-            return(result["result"])
-        }
 
     # Perform a request and receive response from the server
-    def doRequest(self, request) {
+    def doRequest(self, request):
         requestString = json.dumps(request)
-
+        #print(requestString)
+        #print(type(requestString))
+        #print(requestString.encode())
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.server_address, self.server_port))
-        s.send(reqString)
+        s.send(requestString.encode())
         s.shutdown(1)
         resultString = s.recv(4096)
         s.close()
-        result = json.loads(resultString)
+        result = json.loads(resultString.decode())
+
+        if("error" in result):
+            print("An error has occurred on the server:")
+            print(json.dumps(result))
+            #print(result["error"]["name"] + ":\n\t" + result["error"]["args"])
+        else:
+            #print(result)
+            return(result["result"])
 
         return(result)
-    }
 
 # -----------------------------------------------------------------------------
 # The main program

@@ -52,7 +52,6 @@ server_address = ("", opts.port)
 # Auxiliary classes
 # -----------------------------------------------------------------------------
 
-*
 class Server(object):
 
     """Class that provides synchronous access to the database."""
@@ -65,12 +64,18 @@ class Server(object):
 
     # These act as wrappers for processes in the underlying database
     def read(self):
-        return(self.db.read())
+        #print("Server trying to read")
+        s=self.db.read();
+        #print("Server has read fortune:"+s)
+        return(s)
 
     def write(self, fortune):
         # We return the result of self.db.write even though this function has no return statement.
         # This provides extensibility, since future versions may return some information such as a status code.
+        
+        #print("trying to write fortune:" + fortune)
         self.db.write(fortune)
+        #print("Server thinks it worked")
         return("Successfully wrote fortune \""+fortune+"\" to database")
 
 
@@ -127,16 +132,24 @@ class Request(threading.Thread):
 
             # Throws a TypeError if argument types do not match method header
             result = method(*requestObj["args"])
-            
+            #print("Result of operation:"+result)
             output["result"] = result
 
         except Exception as e:
+            #print(e)
+            #print("test")
             output["error"] = dict()
             output["error"]["name"] = type(e).__name__
             output["error"]["args"] = args(e)
         
         finally:
-            return(json.dumps(output))
+            #print("Server executing finally condition")
+            #print("State of output dict:")
+            #print(output)
+            s = json.dumps(output)
+            #print("State of dumped output dict:")
+            #print(s)
+            return(s)
     
     def run(self):
         try:
@@ -146,6 +159,8 @@ class Request(threading.Thread):
             request = worker.readline()
             # Process the request.
             result = self.process_request(request)
+
+            #print("In run:"+result)
             # Send the result.
             worker.write(result + '\n')
             worker.flush()

@@ -16,7 +16,7 @@ import json
 This module implements the infrastructure needed to transparently create
 objects that communicate via networks. This infrastructure consists of:
 
---  Strub ::
+--  Stub ::
         Represents the image of a remote object on the local machine.
         Used to connect to remote objects. Also called Proxy.
 --  Skeleton ::
